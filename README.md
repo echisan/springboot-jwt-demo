@@ -18,6 +18,6 @@ username | String | 用户名
 password | String | 密码
 rememberMe | Interge | 记住我，只有两个值可以选，0:不记住，1:记住
 
-推荐使用postman去测试，登陆成功后在请求头里可以找到token
+推荐使用postman去测试，登陆成功后在响应头里可以找到token
 
 之后就可以访问`/tasks`了
