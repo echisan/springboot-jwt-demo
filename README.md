@@ -2,7 +2,8 @@
 
 ## 简介
 这是一个使用了springboot+springSecurity+jwt实现的基于token的权限管理的一个demo
-在我的[个人博客](https://echisan.cn/article/16)上有比较详细的说明，可以看一下
+
+具体说明可以看 **[这里](https://github.com/echisan/springboot-jwt-demo/blob/master/blog_content.md)**
 
 ## 使用
 更改一下`application.properites`的数据库的一些配置信息，然后就可以运行了
