@@ -51,7 +51,7 @@
 
 ## 实体类User
 创建一个演示的实体类User，包含最基本的用户名跟密码，至于role干嘛用后面会提到
-```
+```java
 @Entity
 @Table(name = "jd_user")
 public class User {
@@ -86,7 +86,7 @@ public class User {
 ### JwtTokenUtils
 jwt工具类，对jjwt封装一下方便调用
 
-```
+```java
 public class JwtTokenUtils {
 
     public static final String TOKEN_HEADER = "Authorization";
@@ -134,7 +134,7 @@ public class JwtTokenUtils {
 
 ## UserRepository
 写一个根据用户名获取用户的方法，后续会用到
-```
+```java
 public interface UserRepository extends CrudRepository<User, Integer> {
     User findByUsername(String username);
 }
@@ -142,7 +142,7 @@ public interface UserRepository extends CrudRepository<User, Integer> {
 
 ## UserDetailsServiceImpl
 使用springSecurity需要实现`UserDetailsService`接口供权限框架调用，该方法只需要实现一个方法就可以了，那就是根据用户名去获取用户，那就是上面repository定义的方法了，这里直接调用了。
-```
+```java
 @Service
 public class UserDetailsServiceImpl implements UserDetailsService {
 
@@ -161,7 +161,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 由于接口方法需要返回一个`UserDetails`类型的接口，所以这边就再写一个类去实现一下这个接口。
 ### JwtUser
 实现这个接口需要实现几个方法
-```
+```java
 public class JwtUser implements UserDetails {
 
     private Integer id;
@@ -245,7 +245,7 @@ public class JwtUser implements UserDetails {
 该拦截器用于获取用户登录的信息，只需创建一个`token`并调用`authenticationManager.authenticate()`让spring-security去进行验证就可以了，不用自己查数据库再对比密码了，这一步交给spring去操作。
 这个操作有点像是shiro的`subject.login(new UsernamePasswordToken())`，验证的事情交给框架。
 献上这一部分的代码。
-```
+```java
 public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
     private AuthenticationManager authenticationManager;
@@ -300,7 +300,7 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 ### JWTAuthorizationFilter
 验证成功当然就是进行鉴权了，每一次需要权限的请求都需要检查该用户是否有该权限去操作该资源，当然这也是框架帮我们做的，那么我们需要做什么呢？很简单，只要告诉spring-security该用户是否已登录，是什么角色，拥有什么权限就可以了。
 `JWTAuthenticationFilter`继承于`BasicAuthenticationFilter`，至于为什么要继承这个我也不太清楚了，这个我也是网上看到的其中一种实现，实在springSecurity苦手，不过我觉得不继承这个也没事呢（实现以下filter接口或者继承其他filter实现子类也可以吧）只要确保过滤器的顺序，`JWTAuthorizationFilter`在`JWTAuthenticationFilter`后面就没问题了。
-```
+```java
 public class JWTAuthorizationFilter extends BasicAuthenticationFilter {
 
     public JWTAuthorizationFilter(AuthenticationManager authenticationManager) {
@@ -337,7 +337,7 @@ public class JWTAuthorizationFilter extends BasicAuthenticationFilter {
 
 ## 配置SpringSecurity
 到这里基本操作都写好啦，现在就需要我们将这些辛苦写好的“组件”组合到一起发挥作用了，那就需要配置了。需要开启一下注解`@EnableWebSecurity`然后再继承一下`WebSecurityConfigurerAdapter`就可以啦，springboot就是可以为所欲为~
-```
+```java
 @EnableWebSecurity
 // 至于为什么要配置这个，嘿嘿，卖个关子
 @EnableGlobalMethodSecurity(prePostEnabled = true)
@@ -385,7 +385,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
 ## AuthController
 连配置都搞定了，那么问题来了，没有账号密码呢。所以写一个注册的控制器，这个就不是难事啦
-```
+```java
 @RestController
 @RequestMapping("/auth")
 public class AuthController {
@@ -410,14 +410,14 @@ public class AuthController {
 }
 ```
 等等！注册是有了，那登录在哪呢？我们看一下`UsernamePasswordAuthenticationFilter`的源代码
-```
+```java
 	public UsernamePasswordAuthenticationFilter() {
 		super(new AntPathRequestMatcher("/login", "POST"));
 	}
 ```
 可以看出来默认是`/login`，所以登录直接使用这个路径就可以啦~当然也可以自定义
 只需要在`JWTAuthenticationFilter`的构造方法中加入下面那一句话就可以啦
-```
+```java
  public JWTAuthenticationFilter(AuthenticationManager authenticationManager) {
         this.authenticationManager = authenticationManager;
         super.setFilterProcessesUrl("/auth/login");
@@ -429,7 +429,7 @@ public class AuthController {
 
 ## TaskController
 当然注册登录都完成了，那就是写一个测试控制器，一个需要权限的控制器去测试了，为了控制一下文章篇幅，写了一个比较简单的控制器作为演示
-```
+```java
 @RestController
 @RequestMapping("/tasks")
 public class TaskController {
@@ -480,7 +480,7 @@ public class TaskController {
 确实，看一下上面的代码。在实现`UserDetails`接口的时候写了一些奇怪的东西，就是这个`getAuthorities`方法啦。
 这是springSecurity用来获取用户权限的方法。
 在User类中写得`role`在这里就能排上用场了，这里将要实现的权限管理是基于角色的权限管理，再细颗粒的博主就不会啦哈哈哈，但还是可以看一看的。
-```
+```java
     // 写一个能直接使用user创建jwtUser的构造器
     public JwtUser(User user) {
         id = user.getId();
@@ -504,7 +504,7 @@ public class TaskController {
 1. 用户验证成功，根据用户名以及过期时间生成token
 2. 权限验证，假如能从token中获取用户名就该token验证成功
 3. 创建一个`UsernamePasswordAuthenticationToken`该token包含用户的角色信息，而不是一个空的`ArrayList`，查看一下源代码是有以下一个构造方法的。
-```
+```java
 	public UsernamePasswordAuthenticationToken(Object principal, Object credentials,
 			Collection<? extends GrantedAuthority> authorities) {
 		super(authorities);
@@ -522,7 +522,7 @@ public class TaskController {
 
 可这发现根本就不关`role`什么事啊    ![沉思](https://ws4.sinaimg.cn/large/7fa15162gy1fsqzb0b0c7j203o044q2q.jpg)
 
-```
+```java
 	User user = userRepository.findByUsername("username");
 	String role = user.getRole();
 ```
@@ -540,7 +540,7 @@ jwt是由三部分组成的：
 
 ### 改造一下JwtTokenUtils
 
-```
+```java
     // 添加角色的key
     private static final String ROLE_CLAIMS = "rol";
 
@@ -564,7 +564,7 @@ jwt是由三部分组成的：
 
 ### 修改JWTAuthenticationFilter
 
-```
+```java
     JwtUser jwtUser = (JwtUser) authResult.getPrincipal();
     boolean isRemember = rememberMe.get() == 1;
 
@@ -580,7 +580,7 @@ jwt是由三部分组成的：
 
 ### 修改JWTAuthorizationFilter
 
-```
+```java
     // 这里从token中获取用户信息并新建一个token
     private UsernamePasswordAuthenticationToken getAuthentication(String tokenHeader) {
         String token = tokenHeader.replace(JwtTokenUtils.TOKEN_PREFIX, "");
@@ -596,7 +596,7 @@ jwt是由三部分组成的：
 ```
 
 到这里基本上修改已经完成了，接下来就可以测试一下了，再配置一下springSecurity
-```
+```java
     protected void configure(HttpSecurity http) throws Exception {
         http.cors().and().csrf().disable()
                 .authorizeRequests()
@@ -639,7 +639,7 @@ jwt是由三部分组成的：
 
 第二个问题：
 除了在springSecurity中配置访问权限，还有这种方式啦，也是十分的方便呢。但是如果要使用这用的方式就需要配置上那个注解啦，不然虽然写了下面的注解但是是不会生效的。
-```
+```java
     @PostMapping
     @PreAuthorize("hasRole('ADMIN')")
     public String newTasks(){
@@ -650,7 +650,7 @@ jwt是由三部分组成的：
 ## 统一结果处理
 
 当然会有一些需求是要统一处理被403响应的事件，很简单，只要新建一个类`JWTAuthenticationEntryPoint`实现一下接口`AuthenticationEntryPoint`就可以了
-```
+```java
 public class JWTAuthenticationEntryPoint implements AuthenticationEntryPoint {
     @Override
     public void commence(HttpServletRequest request,
@@ -667,7 +667,7 @@ public class JWTAuthenticationEntryPoint implements AuthenticationEntryPoint {
 ```
 
 再配置一下springSecurity
-```
+```java
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.cors().and().csrf().disable()
