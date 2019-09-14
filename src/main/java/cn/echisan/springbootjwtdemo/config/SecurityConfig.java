@@ -1,6 +1,7 @@
 package cn.echisan.springbootjwtdemo.config;
 
-import cn.echisan.springbootjwtdemo.JWTAuthenticationEntryPoint;
+import cn.echisan.springbootjwtdemo.exception.JWTAccessDeniedHandler;
+import cn.echisan.springbootjwtdemo.exception.JWTAuthenticationEntryPoint;
 import cn.echisan.springbootjwtdemo.filter.JWTAuthenticationFilter;
 import cn.echisan.springbootjwtdemo.filter.JWTAuthorizationFilter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,7 +32,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private UserDetailsService userDetailsService;
 
     @Bean
-    public BCryptPasswordEncoder bCryptPasswordEncoder(){
+    public BCryptPasswordEncoder bCryptPasswordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
@@ -55,7 +56,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 // 不需要session
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
-                .exceptionHandling().authenticationEntryPoint(new JWTAuthenticationEntryPoint());
+                .exceptionHandling().authenticationEntryPoint(new JWTAuthenticationEntryPoint())
+                .accessDeniedHandler(new JWTAccessDeniedHandler());      //添加无权限时的处理
     }
 
     @Bean
