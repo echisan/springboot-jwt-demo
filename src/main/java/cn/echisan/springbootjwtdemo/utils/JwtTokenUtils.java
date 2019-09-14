@@ -1,6 +1,7 @@
 package cn.echisan.springbootjwtdemo.utils;
 
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 
@@ -53,8 +54,12 @@ public class JwtTokenUtils {
     }
 
     // 是否已过期
-    public static boolean isExpiration(String token){
-        return getTokenBody(token).getExpiration().before(new Date());
+    public static boolean isExpiration(String token) {
+        try {
+            return getTokenBody(token).getExpiration().before(new Date());
+        } catch (ExpiredJwtException e) {
+            return true;
+        }
     }
 
     private static Claims getTokenBody(String token){
