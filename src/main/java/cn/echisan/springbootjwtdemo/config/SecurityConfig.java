@@ -45,9 +45,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http.cors().and().csrf().disable()
                 .authorizeRequests()
+                .antMatchers(HttpMethod.DELETE, "/tasks/**").hasRole("ADMIN")
                 // 测试用资源，需要验证了的用户才能访问
                 .antMatchers("/tasks/**").authenticated()
-                .antMatchers(HttpMethod.DELETE, "/tasks/**").hasRole("ADMIN")
                 // 其他都放行了
                 .anyRequest().permitAll()
                 .and()
