@@ -39,7 +39,7 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         // 从输入流中获取到登录的信息
         try {
             LoginUser loginUser = new ObjectMapper().readValue(request.getInputStream(), LoginUser.class);
-            rememberMe.set(loginUser.getRememberMe());
+            rememberMe.set(loginUser.getRememberMe() == null ? 0 : loginUser.getRememberMe());
             return authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(loginUser.getUsername(), loginUser.getPassword(), new ArrayList<>())
             );
