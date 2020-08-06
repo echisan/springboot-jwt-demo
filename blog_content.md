@@ -624,7 +624,7 @@ jwt是由三部分组成的：
 **接下来重头戏来了**
 先在数据库里手动将admin的角色改成`ROLE_ADMIN` 修改完之后再登录一下获取新的token，再去尝试一下删除tasks资源
 啪啪啪 成功啦~
-![删除成功](https://ws1.sinaimg.cn/large/7fa15162gy1fsqzgxdf2mj20fc0fqmxe.jpg)
+![删除成功](https://user-images.githubusercontent.com/38010908/89498932-bc08b980-d7f1-11ea-92f6-273f356674ba.png)
 
 到这里位置，基于角色的权限管理基本操作都做了一遍了，现在来解答一下上面挖的一些坑
 
