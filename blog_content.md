@@ -28,7 +28,7 @@
 
 ## 创建一个springboot工程
 建议使用maven去构建项目。
-```
+```xml
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-jpa</artifactId>
@@ -460,17 +460,17 @@ public class TaskController {
 到这里基本操作都做好了，可以去测试一下了，这里使用的是postman比较直观明了了。下面先注册一下账号，这里返回了插入了数据库之后的用户实体，所以注册是成功了
 
 ![注册](https://wx3.sinaimg.cn/large/7fa15162gy1fsqzegnzwxj20h4064aa6.jpg)
-![注册成功](https://ws1.sinaimg.cn/large/7fa15162gy1fsqzeoso7vj20or02x0sp.jpg)
+![注册成功](https://img-blog.csdn.net/20180623224251755?watermark/2/text/aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2VjaDEzYW4=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70)
 
 接下来先测试一下先不登录访问一下我们的tasks，这里理所当然403无权限访问了
-![未登录403](https://ws3.sinaimg.cn/large/7fa15162gy1fsqzezp5fzj20dl0d2q3d.jpg)
+![未登录403](https://img-blog.csdn.net/20180623224420860?watermark/2/text/aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2VjaDEzYW4=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70)
 
 然后终于能登录了，接下来尝试一下登录之后再次访问tasks看看是什么结果
-![登录](https://ws1.sinaimg.cn/large/7fa15162gy1fsqzf7q1uwj20f406awel.jpg)
+![登录](https://img-blog.csdn.net/20180623224808961?watermark/2/text/aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2VjaDEzYW4=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70)
 发送了登录请求之后查看响应头，能看到我们生成后的token，那就是登录成功了
 ![登录成功](https://wx4.sinaimg.cn/large/7fa15162gy1fsqzfdpjcuj214y0as3z0.jpg)
 接下来只需要把该响应头添加到我们的请求头上去，这里需要把`Bearer[空格]`去掉，注意Bearer后的空格也要去掉，因为postman再选了BearerToken之后会自动在token前面再加一个Bearer
-![设置请求头](https://ws2.sinaimg.cn/large/7fa15162gy1fsqzfrysllj21660aw750.jpg)
+![设置请求头](https://img-blog.csdn.net/2018062322525394?watermark/2/text/aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2VjaDEzYW4=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70)
 再次访问一下tasks，结果理想当然的是成功啦~
 ![成功请求](https://wx3.sinaimg.cn/large/7fa15162gy1fsqzg491b4j20uw08mwes.jpg)
 
@@ -520,13 +520,13 @@ public class TaskController {
 2. 解析token，检查是否能从token中取出username，如果有就算成功了
 3. 再根据该username创建一个`UsernamePasswordAuthenticationToken`对象就算成功了
 
-可这发现根本就不关`role`什么事啊    ![沉思](https://ws4.sinaimg.cn/large/7fa15162gy1fsqzb0b0c7j203o044q2q.jpg)
+可这发现根本就不关`role`什么事啊    ![沉思](https://img-blog.csdn.net/2018062400043593?watermark/2/text/aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2VjaDEzYW4=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70)
 
 ```java
 	User user = userRepository.findByUsername("username");
 	String role = user.getRole();
 ```
-![这里写图片描述](https://ws2.sinaimg.cn/large/7fa15162gy1fsqzb8duumj201b01bq2r.jpg) 这还不简单！这不就完事了嘛！
+![这里写图片描述](https://img-blog.csdn.net/20180624000629961?watermark/2/text/aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2VjaDEzYW4=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70) 这还不简单！这不就完事了嘛！
 
 可这不现实啊，每一次请求都要查询一下数据库这种开销这么大的操作当然是不行的。
 思考一下，为什么是使用jwt而不是一个简简单单的`UUID`作为token呢。
@@ -617,14 +617,14 @@ jwt是由三部分组成的：
 由于更新了token的生成方式，所以需要重新登录一下获取新的token
 
 接下来可以测试了，继续使用postman对tasks资源进行删除，显然不行。
-![测试删除tasks](https://ws1.sinaimg.cn/large/7fa15162gy1fsqzcued4xj20ee0eqwf0.jpg)
+![测试删除tasks](https://img-blog.csdn.net/20180624004341802?watermark/2/text/aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2VjaDEzYW4=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70)
 试试看获取该资源会怎么样，获取tasks资源是没有问题的。
 ![测试获取tasks](https://wx3.sinaimg.cn/large/7fa15162gy1fsqzg491b4j20uw08mwes.jpg)
 
 **接下来重头戏来了**
 先在数据库里手动将admin的角色改成`ROLE_ADMIN` 修改完之后再登录一下获取新的token，再去尝试一下删除tasks资源
 啪啪啪 成功啦~
-![删除成功](https://ws1.sinaimg.cn/large/7fa15162gy1fsqzgxdf2mj20fc0fqmxe.jpg)
+![删除成功](https://img-blog.csdn.net/20180624010148546?watermark/2/text/aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2VjaDEzYW4=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70)
 
 到这里位置，基于角色的权限管理基本操作都做了一遍了，现在来解答一下上面挖的一些坑
 
