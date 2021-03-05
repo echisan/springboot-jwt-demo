@@ -1,7 +1,7 @@
 ## 前言
-其实挺早就想写一篇关于jwt的博文去好好总结一下之前踩过的坑了，但是事情有点太多了，一直没抽出时间来写，刚好现在有点时间可以好好静下来写一遍(可能)有点质量的博文吧，毕竟一直都是看别人的博文去学习，我也好好写一遍吧哈哈。既然如果偶然搜到这篇文章的话，我相信大家应该都了解了什么是jwt，比较想知道怎么使用springboot+spring-security去实现，当然也可以使用shiro，其实道理都差不多， ~~可能看到标题可能会有疑问，为什么会有一个redis呢？这是我学习有关jwt相关知识的时候产生的一些问题，以及自己对这方面问题的一些解决方案，接下来的文章我会详细跟大家讨论一下的，欢迎大家也可以一起讨论一下。~~ （刚开始写博客，写的不好多多包涵）
-
-看完这篇文章之后你可以知道
+项目转载 
+## 代码地址
+Github: [springboot-jwt-demo](https://github.com/echisan/springboot-jwt-demo)
 
 1. 如何使用springboot，springSecurity，jwt实现基于token的权限管理
 2. 统一处理无权限请求的结果
@@ -690,12 +690,3 @@ public class JWTAuthenticationEntryPoint implements AuthenticationEntryPoint {
 这是统一处理后的结果
 ![这里写图片描述](https://wx4.sinaimg.cn/large/7fa15162gy1fsqzhbrakxj216v04aglo.jpg)
 
-## 享受成功的喜悦
-到这里一个较为完善的权限管理已经实现啦，如果哪里有不足或者出现错误可以告诉一下我，或者可以到GitHub上提个issue一起讨论下。
-
-## 代码地址
-Github: [springboot-jwt-demo](https://github.com/echisan/springboot-jwt-demo)
-代码里也有挺多的注释，可以看一看，如果觉得这篇文章帮助到你了可以到github点个小星星鼓励一下博主~
-
-## 结语
-至于为什么没有redis，没有token管理，因为在我写这篇文章的时候想了很多，感觉我现在的解决方案也不是特别好，如果想知道的话可以到GitHub上找我，一起讨论下。
